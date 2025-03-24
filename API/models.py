@@ -6,9 +6,9 @@ TeamRatingType = list[dict[str, str | int]]
 class Team(BaseModel):
     """Basic team and rating object."""
 
-    name: str
-    home_rating: int
-    away_rating: int
+    team_name: str
+    home_rating: int | str
+    away_rating: int | str
 
 
 class Teams(BaseModel):

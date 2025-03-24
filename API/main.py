@@ -1,5 +1,6 @@
 import datetime
 from fastapi import FastAPI, Depends
+from fastapi.middleware.cors import CORSMiddleware
 from passlib.hash import bcrypt
 from sqlalchemy.orm import Session
 from typing import cast, Any
@@ -23,6 +24,19 @@ from fpl_engine.my_team import MyTeam, create_team_table
 from fpl_engine.static import FPLStatic
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    # allow_origins=[
+    #     "http://localhost:8081",
+    #     "exp://swbe7oq-anonymous-8081.exp.direct",
+    #     "https://swbe7oq-anonymous-8081.exp.direct/",
+    # ],
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 FixturesType = list[dict[str | int, str | int]]
 
@@ -54,6 +68,19 @@ def create_account(
         return "Failed to create account"
 
 
+@app.post("/verify_account")
+def verify_account(fpl_account: FPLAccount, db: Session = Depends(get_db)):
+    existing_user = get_existing_user(db, fpl_account.fpl_email)
+    if not existing_user:
+        raise Exception(f"No account exists for email {fpl_account.fpl_email}.")
+
+    check_pw = bcrypt.verify(fpl_account.fpl_password, existing_user.password_hash)
+    if not check_pw:
+        raise Exception("Incorrect password.")
+
+    return "Succesfully logged in."
+
+
 @app.put("/change_cookie")
 def change_cookie(cookie_details: CookieDetails, db: Session = Depends(get_db)) -> str:
     existing_user = get_existing_user(db, cookie_details.email)
@@ -78,14 +105,14 @@ def get_ratings(
 @app.put("/teams/rating")
 def update_ratings(teams: Teams, db: Session = Depends(get_db)) -> TeamRatingType:
     write_team_data(db, teams)
-    team_names = TeamNames(names=[team.name for team in teams.teams])
+    team_names = TeamNames(names=[team.team_name for team in teams.teams])
     return check_team_data(db, team_names)
 
 
 @app.post("/teams/rating")
 def create_ratings(teams: Teams, db: Session = Depends(get_db)) -> TeamRatingType:
     write_team_data(db, teams, update_existing=False)
-    team_names = TeamNames(names=[team.name for team in teams.teams])
+    team_names = TeamNames(names=[team.team_name for team in teams.teams])
     return check_team_data(db, team_names)
 
 
@@ -130,7 +157,7 @@ def update_static_data(db: Session = Depends(get_db)) -> str:
         return f"Exception ocurred updating static data: {e}"
 
 
-@app.get("/my_team/get_team")
+@app.post("/my_team/get_team")
 def get_my_team(
     fpl_account: FPLAccount, db: Session = Depends(get_db)
 ) -> TeamDifficultyType:
@@ -140,7 +167,7 @@ def get_my_team(
     return team_table.to_dict(orient="records")
 
 
-@app.get("/my_team/fixture_difficulty")
+@app.post("/my_team/fixture_difficulty")
 def get_my_team_difficulty(
     fpl_account: FPLAccount,
     difficulty_summary_list: list[int] = [1, 3, 6, 10],
@@ -162,4 +189,5 @@ def get_my_team_difficulty(
                 if isinstance(col, int) or col == "Unknown"
             ]
         )
+    combined_table = combined_table.drop(columns=["team_id", "id"])
     return combined_table.to_dict(orient="records")

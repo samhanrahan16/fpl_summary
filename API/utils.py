@@ -17,4 +17,4 @@ def create_difficulty_table(
     for n in difficulty_summary_list:
         fixtures[f"Difficulty Next {n} Fixtures"] = difficulty_summary(difficulties, n)
     fixtures["Difficulty All Remaining Fixtures"] = difficulty_summary(difficulties)
-    return fixtures
+    return fixtures.round(3)

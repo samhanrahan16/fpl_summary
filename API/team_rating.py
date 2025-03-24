@@ -68,23 +68,25 @@ def write_team_data(
                 f"{list(all_teams)}"
             )
 
-    team_names = TeamNames(names=[team.name for team in team_ratings.teams])
+    team_names = TeamNames(names=[team.team_name for team in team_ratings.teams])
     _validate_team_names(team_names.names)
     existing_teams = _query_team_ratings(db, team_names)
     existing_teams_dict = {team[1]: team[0] for team in existing_teams}
     for team in team_ratings.teams:
         new_team: TeamRatings | None = None
-        if team.name in existing_teams_dict.keys():
+        if team.team_name in existing_teams_dict.keys():
             if update_existing:
-                new_team = existing_teams_dict[team.name]
-                new_team.home_rating = team.home_rating  # type: ignore
-                new_team.away_rating = team.away_rating  # type: ignore
+                new_team = existing_teams_dict[team.team_name]
+                new_team.home_rating = int(team.home_rating)  # type: ignore
+                new_team.away_rating = int(team.away_rating)  # type: ignore
         else:
-            team_id = db.query(TeamData.id).filter(TeamData.name == team.name).one()[0]
+            team_id = (
+                db.query(TeamData.id).filter(TeamData.name == team.team_name).one()[0]
+            )
             new_team = TeamRatings(
                 team_id=team_id,
-                home_rating=team.home_rating,
-                away_rating=team.away_rating,
+                home_rating=int(team.home_rating),
+                away_rating=int(team.away_rating),
             )
         if new_team:
             db.add(new_team)
