@@ -1,12 +1,13 @@
-from abc import ABC, abstractmethod
 import datetime
-from sqlalchemy.orm import Session
+from abc import ABC, abstractmethod
 from typing import Any
+
+from sqlalchemy.orm import Session
 
 from db.fpl_detail import FPLDetail
 from fpl_client.client import FPLClient
 from fpl_client.endpoints import FPLEndpoints
-from fpl_engine.core import detail_to_endpoint, FPlDetailTypes
+from fpl_engine.core import FPlDetailTypes, detail_to_endpoint
 
 
 class MissingDataException(Exception):
@@ -21,7 +22,9 @@ class ProcessFPLData(ABC):
         self.db = db
 
     @staticmethod
-    def get_fpl_data(fpl_client: FPLClient, endpooint: FPLEndpoints) -> dict[Any, Any]:
+    def get_fpl_data(
+        fpl_client: FPLClient, endpooint: FPLEndpoints
+    ) -> dict[Any, Any] | str:
         """Get data from FPL."""
         return fpl_client.get_data(endpooint)
 
@@ -52,6 +55,7 @@ class ProcessFPLData(ABC):
         entries = cls.query_detail_table(db, detail_type)
         if entries:
             version = entries.record_version
+            assert entries.created_at is not None
             current_entry_date = entries.created_at.date()
             if current_entry_date == today:
                 collect_data = False
@@ -61,6 +65,7 @@ class ProcessFPLData(ABC):
         else:
             version = 0
         # Get the data from FPL
+        assert version is not None
         if collect_data:
             fpl_data = cls.get_fpl_data(fpl_client, endpoint)
             # Save down into the db making sure versioning is correct

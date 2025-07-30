@@ -1,9 +1,10 @@
-from sqlalchemy.orm import Session
 from typing import Any, cast
 
+from sqlalchemy.orm import Session
+
 from db.fpl_detail import FPLDetail
-from db.team_data import TeamData
 from db.player_data import PlayerData
+from db.team_data import TeamData
 from fpl_engine.core import FPlDetailTypes, StaticDataSections
 from fpl_engine.process import ProcessFPLData
 
@@ -14,7 +15,7 @@ class FPLStatic(ProcessFPLData):
         super().__init__(db)
 
     @staticmethod
-    def process_team_data(db: Session, team_data: list[dict[str, Any]]) -> None:
+    def process_team_data(db: Session, team_data: list[dict[str, str | int]]) -> None:
         """Process team section of static data."""
         current_team_ids = db.query(TeamData.fpl_id).all()
         current_team_ids = [id[0] for id in current_team_ids]
@@ -29,10 +30,10 @@ class FPLStatic(ProcessFPLData):
                 continue
             if required_team_data["id"] not in current_team_ids:
                 team_data = TeamData(
-                    fpl_id=required_team_data["id"],
-                    fpl_code=required_team_data["code"],
-                    name=required_team_data["name"],
-                    short_name=required_team_data["short_name"],
+                    fpl_id=cast(int, required_team_data["id"]),
+                    fpl_code=cast(int, required_team_data["code"]),
+                    name=cast(str, required_team_data["name"]),
+                    short_name=cast(str, required_team_data["short_name"]),
                 )
                 db.add(team_data)
         db.commit()
@@ -55,30 +56,34 @@ class FPLStatic(ProcessFPLData):
                 )
                 player_data = PlayerData(
                     fpl_id=player_id,
-                    fpl_code=player["code"],
+                    fpl_code=cast(int, player["code"]),
                     team_id=team_id,
-                    first_name=player["first_name"],
-                    second_name=player["second_name"],
-                    chance_of_playing=player["chance_of_playing_next_round"],
+                    first_name=cast(str, player["first_name"]),
+                    second_name=cast(str, player["second_name"]),
+                    chance_of_playing=cast(
+                        float, player["chance_of_playing_next_round"]
+                    ),
                     form=float(player["form"]),
-                    total_points=player["total_points"],
-                    goals=player["goals_scored"],
-                    assists=player["assists"],
-                    clean_sheets=player["clean_sheets"],
-                    goals_conceeded=player["goals_conceded"],
-                    penalties_saved=player["penalties_saved"],
-                    penalties_missed=player["penalties_missed"],
-                    yellow_cards=player["yellow_cards"],
-                    red_cards=player["red_cards"],
-                    saves=player["saves"],
-                    bonus_points=player["bonus"],
-                    starts=player["starts"],
-                    expected_goals=player["expected_goals_per_90"],
-                    expected_assists=player["expected_assists_per_90"],
-                    expected_goals_conceeded=player["expected_goals_conceded_per_90"],
-                    expected_goal_involvments=player[
-                        "expected_goal_involvements_per_90"
-                    ],
+                    total_points=cast(int, player["total_points"]),
+                    goals=cast(int, player["goals_scored"]),
+                    assists=cast(int, player["assists"]),
+                    clean_sheets=cast(int, player["clean_sheets"]),
+                    goals_conceeded=cast(int, player["goals_conceded"]),
+                    penalties_saved=cast(int, player["penalties_saved"]),
+                    penalties_missed=cast(int, player["penalties_missed"]),
+                    yellow_cards=cast(int, player["yellow_cards"]),
+                    red_cards=cast(int, player["red_cards"]),
+                    saves=cast(int, player["saves"]),
+                    bonus_points=cast(int, player["bonus"]),
+                    starts=cast(int, player["starts"]),
+                    expected_goals=cast(float, player["expected_goals_per_90"]),
+                    expected_assists=cast(float, player["expected_assists_per_90"]),
+                    expected_goals_conceeded=cast(
+                        float, player["expected_goals_conceded_per_90"]
+                    ),
+                    expected_goal_involvments=cast(
+                        float, player["expected_goal_involvements_per_90"]
+                    ),
                 )
                 db.add(player_data)
             else:
@@ -114,7 +119,7 @@ class FPLStatic(ProcessFPLData):
     def process_static_data(self) -> None:
         """Process the full static JSON."""
         static_object = cast(FPLDetail, self.get_static_object(FPlDetailTypes.STATIC))
-        static_json = static_object.fpl_data
+        static_json = cast(dict[str, Any], static_object.fpl_data)
         # process the team data
         self.process_team_data(self.db, static_json[StaticDataSections.TEAMS])
         # process the player data

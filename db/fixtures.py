@@ -1,8 +1,9 @@
-from sqlalchemy import Column, Integer, TIMESTAMP
-from database import Base  # type: ignore
+from sqlalchemy import TIMESTAMP, Column, Integer
+
+from database import Base
 
 
-class Fixtures(Base):  # type: ignore
+class Fixtures(Base):
     __tablename__ = "fixtures"
 
     id = Column(Integer, primary_key=True, index=True)

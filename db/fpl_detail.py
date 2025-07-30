@@ -1,8 +1,9 @@
-from sqlalchemy import Column, Integer, String, JSON, Boolean, TIMESTAMP, func
-from database import Base  # type: ignore
+from sqlalchemy import JSON, TIMESTAMP, Boolean, Column, Integer, String, func
+
+from database import Base
 
 
-class FPLDetail(Base):  # type: ignore
+class FPLDetail(Base):
     __tablename__ = "fpl_detail"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -14,5 +15,5 @@ class FPLDetail(Base):  # type: ignore
     record_version = Column(Integer, nullable=False)
     is_current_record = Column(Boolean, nullable=False)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<FPLDetail(id={self.id}, detail_type='{self.detail_type}', created_at='{self.created_at}')>"

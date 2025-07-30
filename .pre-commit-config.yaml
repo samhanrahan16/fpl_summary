@@ -1,0 +1,32 @@
+repos:
+  # Pre-commit Hooks for Basic Checks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-merge-conflict
+
+  # Ruff (Replaces isort, flake8, pylint)
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.11.2
+    hooks:
+      - id: ruff
+        args: ["--select=I", "--fix"]  # Enables isort-style import sorting
+
+  # mypy (Static type checking for Python)
+  - repo: local
+    hooks:
+      - id: mypy
+        name: mypy
+        entry: mypy
+        language: system
+        types: [python]
+        args: ["--config-file", "mypy.ini"]
+
+  # Black (Python code formatter)
+  - repo: https://github.com/psf/black
+    rev: 25.1.0
+    hooks:
+      - id: black

@@ -40,4 +40,3 @@ BEGIN
     INSERT INTO audit_team_data (team_id, fpl_id, fpl_code, name, short_name, operation_type)
     VALUES (OLD.id, OLD.fpl_id, OLD.fpl_code, OLD.name, OLD.short_name, 'DELETE');
 END;
-
