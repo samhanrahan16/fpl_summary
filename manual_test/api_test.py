@@ -1,8 +1,18 @@
+import json
+import re
+from pathlib import Path
+
 import requests
+from bs4 import BeautifulSoup
 
 ss = requests.Session()
 
 url = "http://127.0.0.1:8000"
+url1 = "https://understat.com/team/Manchester_City/2022"
+url2 = "https://understat.com/league/EPL/2023"
+
+r = ss.post(url + "/calculate/team_ratings")
+print(r.text)
 
 # pl_profile = "eyJzIjogIld6SXNNekU0TlRnMU9ESmQ6MXRhTVZhOlZJVHBVaWZUX20zYUNkT0V6QTNsR1JQQXdhLVRLakhVYnk0ZEphR0VVZ3ciLCAidSI6IHsiaWQiOiAzMTg1ODU4MiwgImZuIjogIlNhbSIsICJsbiI6ICJIYW5yYWhhbiIsICJmYyI6IDQzfX0="
 # datadome = "mcm0HxDxR4YbQSbC5zmgLGNCJp0WXnTB_4IXvsizc8ZYnPNtzon2w35ZvA_d2dlQqnMLkG_6723DPzRb978zqSUSx9ej1V8t5BY4KAzQEiaSDLb0h8nVI8u~uieeEGhg"
@@ -17,15 +27,8 @@ url = "http://127.0.0.1:8000"
 # r = ss.post(f"{url}/create_account", json=data)
 # print(r.text)
 
-data = {
-    "fpl_account": {
-        "fpl_email": "samhanrahan16@gmail.com",
-        "fpl_password": "Imperial16!1969",
-    }
-}
-
-r = ss.get(f"{url}/my_team/fixture_difficulty", json=data)
-print(r.text)
+# r = ss.get(f"{url}/my_team/fixture_difficulty", json=data)
+# print(r.text)
 # url = "https://users.premierleague.com/accounts/login/"
 # payload = {
 #     "password": "Imperial16!1969",

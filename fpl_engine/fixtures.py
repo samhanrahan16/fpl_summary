@@ -1,11 +1,12 @@
+from typing import cast
+
 import numpy as np
 import pandas as pd
 from sqlalchemy import delete
 from sqlalchemy.orm import Session
-from typing import cast
 
-from db.fpl_detail import FPLDetail
 from db.fixtures import Fixtures
+from db.fpl_detail import FPLDetail
 from db.team_data import TeamData
 from db.team_ratings import TeamRatings
 from fpl_engine.core import FPlDetailTypes, HomeAway
@@ -47,20 +48,32 @@ def analyse_team_fixtures(db: Session) -> tuple[pd.DataFrame, pd.DataFrame]:
     ).set_index("team_id")
     difficulty_table = fixtures_table.copy()
     for fixture in fixtures:
-        gameweek = cast(int | None, fixture.gameweek)
+        gameweek = fixture.gameweek
         if gameweek is None:
             gameweek = "Unknown"
         if gameweek not in fixtures_table.columns:
             fixtures_table[gameweek] = None
             difficulty_table[gameweek] = None
-        fixtures_table.loc[fixture.team_h, gameweek] = f"{teams[fixture.team_a]} (H)"
-        fixtures_table.loc[fixture.team_a, gameweek] = f"{teams[fixture.team_h]} (A)"
-
-        difficulty_table.loc[fixture.team_h, gameweek] = _create_difficulty(
-            db, fixture.team_a, fixture.team_h_difficulty, HomeAway.AWAY
+        home_team = cast(int, fixture.team_h)
+        away_team = cast(int, fixture.team_a)
+        fixtures_table.loc[home_team, cast(str, gameweek)] = (
+            f"{teams[fixture.team_a]} (H)"
         )
-        difficulty_table.loc[fixture.team_a, gameweek] = _create_difficulty(
-            db, fixture.team_h, fixture.team_a_difficulty, HomeAway.HOME
+        fixtures_table.loc[away_team, cast(str, gameweek)] = (
+            f"{teams[fixture.team_h]} (A)"
+        )
+
+        difficulty_table.loc[home_team, cast(str, gameweek)] = _create_difficulty(
+            db,
+            away_team,
+            cast(int, fixture.team_h_difficulty),
+            HomeAway.AWAY,
+        )
+        difficulty_table.loc[away_team, cast(str, gameweek)] = _create_difficulty(
+            db,
+            cast(int, fixture.team_h),
+            cast(int, fixture.team_a_difficulty),
+            HomeAway.HOME,
         )
 
     return fixtures_table, difficulty_table
@@ -77,9 +90,9 @@ def difficulty_summary(
     """
     results: list[float] = []
     difficulty_table.drop("Unknown", axis=1)
-    for index in difficulty_table.index:  # type: ignore
-        row: pd.Series[int] = difficulty_table.loc[index]  # type: ignore
-        numeric_row = pd.to_numeric(row, errors="coerce")  # type: ignore
+    for index in difficulty_table.index:
+        row: pd.Series[int] = difficulty_table.loc[index]
+        numeric_row = pd.to_numeric(row, errors="coerce")
         final_row: list[float] = list(numeric_row.dropna())
         if x is not None:
             final_row = final_row[:x]
@@ -99,12 +112,12 @@ class FPLFixtures(ProcessFPLData):
     ) -> Fixtures:
         """Create Fixture ORM."""
         return Fixtures(
-            fpl_id=fixture["id"],
-            gameweek=fixture["event"],
+            fpl_id=cast(int, fixture["id"]),
+            gameweek=cast(int, fixture["event"]),
             team_h=team_dict[cast(int, fixture["team_h"])],
             team_a=team_dict[cast(int, fixture["team_a"])],
-            team_h_difficulty=fixture["team_h_difficulty"],
-            team_a_difficulty=fixture["team_a_difficulty"],
+            team_h_difficulty=cast(int, fixture["team_h_difficulty"]),
+            team_a_difficulty=cast(int, fixture["team_a_difficulty"]),
         )
 
     def wipe_table(self) -> None:
@@ -121,7 +134,10 @@ class FPLFixtures(ProcessFPLData):
         static_object = cast(FPLDetail, self.get_static_object(FPlDetailTypes.FIXTURES))
         static_json = cast(list[FixtureType], static_object.fpl_data)
         self.wipe_table()
-        teams_dict = {team.fpl_id: team.id for team in self.db.query(TeamData).all()}
+        teams_dict = {
+            cast(int, team.fpl_id): cast(int, team.id)
+            for team in self.db.query(TeamData).all()
+        }
         for fixture in static_json:
             if fixture["finished"] is False:
                 fixture_orm = self.write_fixture(self.db, fixture, teams_dict)

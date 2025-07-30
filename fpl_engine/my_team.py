@@ -1,12 +1,13 @@
-import aiohttp
-from fpl import FPL
-from fpl.models import User
-import pandas as pd
-from sqlalchemy.orm import Session
 from typing import cast
 
-from db.player_data import PlayerData
+import aiohttp
+import pandas as pd
+from fpl import FPL
+from fpl.models import User
+from sqlalchemy.orm import Session
+
 from db.login import Users
+from db.player_data import PlayerData
 from fpl_client.client import AsyncRunner
 
 MyTeamType = dict[str, int | bool]
@@ -28,7 +29,7 @@ class MyTeam:
         self.cookie = f"datadome={user.datadome};pl_profile={user.cookie}"
         self.email = email
         self.password = fpl_password
-        self.manager_id = user.manager_id
+        self.manager_id = cast(int, user.manager_id)
         self.session = self.async_runner.run(self._create_session())
         self.user = self.login(
             self.async_runner,
@@ -39,7 +40,7 @@ class MyTeam:
             self.cookie,
         )
 
-    def __del__(self):
+    def __del__(self) -> None:
         """Ensure the session is closed when the object is deleted."""
         self.async_runner.run(self.session.close())
 
@@ -70,9 +71,10 @@ class MyTeam:
         """Get back my team JSON."""
 
         async def _my_team() -> dict[str, int | bool]:
-            return await self.user.get_team()
+            result = await self.user.get_team()
+            return cast(dict[str, int | bool], result)
 
-        return self.async_runner.run(_my_team())
+        return cast(list[dict[str, int | bool]], self.async_runner.run(_my_team()))
 
 
 # Need to add into the player table the position which is element type.
@@ -108,8 +110,10 @@ def create_team_table(db: Session, my_team: list[MyTeamType]) -> pd.DataFrame:
             {
                 "id": player.fpl_id,
                 "name": f"{player.first_name} {player.second_name}",
-                "position": element_type_key[player_positions[player.fpl_id]],
-                "starting": subs[player.fpl_id],
+                "position": element_type_key[
+                    player_positions[cast(int, player.fpl_id)]
+                ],
+                "starting": subs[cast(int, player.fpl_id)],
                 "team_id": player.team_id,
                 "xG": player.expected_goals,
                 "xA": player.expected_assists,

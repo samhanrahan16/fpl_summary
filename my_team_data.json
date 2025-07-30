@@ -1,0 +1,152 @@
+[
+    {
+        "element": 383,
+        "position": 1,
+        "multiplier": 1,
+        "is_captain": false,
+        "is_vice_captain": false,
+        "element_type": 1,
+        "selling_price": 51,
+        "purchase_price": 52
+    },
+    {
+        "element": 3,
+        "position": 2,
+        "multiplier": 1,
+        "is_captain": false,
+        "is_vice_captain": false,
+        "element_type": 2,
+        "selling_price": 62,
+        "purchase_price": 60
+    },
+    {
+        "element": 311,
+        "position": 3,
+        "multiplier": 1,
+        "is_captain": false,
+        "is_vice_captain": false,
+        "element_type": 2,
+        "selling_price": 71,
+        "purchase_price": 70
+    },
+    {
+        "element": 422,
+        "position": 4,
+        "multiplier": 1,
+        "is_captain": false,
+        "is_vice_captain": false,
+        "element_type": 2,
+        "selling_price": 51,
+        "purchase_price": 49
+    },
+    {
+        "element": 99,
+        "position": 5,
+        "multiplier": 1,
+        "is_captain": false,
+        "is_vice_captain": false,
+        "element_type": 3,
+        "selling_price": 77,
+        "purchase_price": 76
+    },
+    {
+        "element": 328,
+        "position": 6,
+        "multiplier": 2,
+        "is_captain": true,
+        "is_vice_captain": false,
+        "element_type": 3,
+        "selling_price": 134,
+        "purchase_price": 131
+    },
+    {
+        "element": 398,
+        "position": 7,
+        "multiplier": 1,
+        "is_captain": false,
+        "is_vice_captain": false,
+        "element_type": 3,
+        "selling_price": 76,
+        "purchase_price": 75
+    },
+    {
+        "element": 182,
+        "position": 8,
+        "multiplier": 1,
+        "is_captain": false,
+        "is_vice_captain": true,
+        "element_type": 3,
+        "selling_price": 109,
+        "purchase_price": 105
+    },
+    {
+        "element": 110,
+        "position": 9,
+        "multiplier": 1,
+        "is_captain": false,
+        "is_vice_captain": false,
+        "element_type": 4,
+        "selling_price": 62,
+        "purchase_price": 62
+    },
+    {
+        "element": 252,
+        "position": 10,
+        "multiplier": 1,
+        "is_captain": false,
+        "is_vice_captain": false,
+        "element_type": 4,
+        "selling_price": 57,
+        "purchase_price": 57
+    },
+    {
+        "element": 447,
+        "position": 11,
+        "multiplier": 1,
+        "is_captain": false,
+        "is_vice_captain": false,
+        "element_type": 4,
+        "selling_price": 68,
+        "purchase_price": 66
+    },
+    {
+        "element": 294,
+        "position": 12,
+        "multiplier": 0,
+        "is_captain": false,
+        "is_vice_captain": false,
+        "element_type": 1,
+        "selling_price": 39,
+        "purchase_price": 39
+    },
+    {
+        "element": 255,
+        "position": 13,
+        "multiplier": 0,
+        "is_captain": false,
+        "is_vice_captain": false,
+        "element_type": 2,
+        "selling_price": 49,
+        "purchase_price": 48
+    },
+    {
+        "element": 274,
+        "position": 14,
+        "multiplier": 0,
+        "is_captain": false,
+        "is_vice_captain": false,
+        "element_type": 3,
+        "selling_price": 52,
+        "purchase_price": 52
+    },
+    {
+        "element": 275,
+        "position": 15,
+        "multiplier": 0,
+        "is_captain": false,
+        "is_vice_captain": false,
+        "element_type": 2,
+        "selling_price": 39,
+        "purchase_price": 39
+    }
+]

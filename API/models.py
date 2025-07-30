@@ -1,20 +1,27 @@
 from pydantic import BaseModel
 
-TeamRatingType = list[dict[str, str | int]]
+TeamRatingType = list[dict[str, str | float]]
 
 
 class Team(BaseModel):
     """Basic team and rating object."""
 
     team_name: str
-    home_rating: int | str
-    away_rating: int | str
+    team_id: int | None = None
+    home_rating: float | str
+    away_rating: float | str
 
 
 class Teams(BaseModel):
     """Object of all teams"""
 
     teams: list[Team]
+
+
+class Season(BaseModel):
+    """Yeah of the season."""
+
+    year: int
 
 
 class TeamNames(BaseModel):

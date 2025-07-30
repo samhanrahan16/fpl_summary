@@ -1,8 +1,9 @@
-from sqlalchemy import Column, Integer, String, Float
-from database import Base  # type: ignore
+from sqlalchemy import Column, Float, Integer, String
+
+from database import Base
 
 
-class PlayerData(Base):  # type: ignore
+class PlayerData(Base):
     __tablename__ = "player_data"
 
     id = Column(Integer, primary_key=True, index=True)
@@ -12,8 +13,8 @@ class PlayerData(Base):  # type: ignore
     first_name = Column(String(50), nullable=False)
     second_name = Column(String(50), nullable=False)
     position = Column(String(10), nullable=False)
-    chance_of_playing = Column(Float, nullable=False)
-    form = Column(Float, nullable=False)
+    chance_of_playing: float = Column(Float, nullable=False)  # type: ignore
+    form: float = Column(Float, nullable=False)  # type: ignore
     total_points = Column(Integer, nullable=False)
     goals = Column(Integer, nullable=False)
     assists = Column(Integer, nullable=False)
@@ -26,10 +27,10 @@ class PlayerData(Base):  # type: ignore
     saves = Column(Integer, nullable=False)
     bonus_points = Column(Integer, nullable=False)
     starts = Column(Integer, nullable=False)
-    expected_goals = Column(Float, nullable=False)
-    expected_assists = Column(Float, nullable=False)
-    expected_goals_conceeded = Column(Float, nullable=False)
-    expected_goal_involvments = Column(Float, nullable=False)
+    expected_goals: float = Column(Float, nullable=False)  # type: ignore
+    expected_assists: float = Column(Float, nullable=False)  # type: ignore
+    expected_goals_conceeded: float = Column(Float, nullable=False)  # type: ignore
+    expected_goal_involvments: float = Column(Float, nullable=False)  # type: ignore
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<Team(first_name={self.first_name}, surname={self.second_name} "

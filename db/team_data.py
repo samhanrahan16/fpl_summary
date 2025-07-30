@@ -1,8 +1,9 @@
 from sqlalchemy import Column, Integer, String
-from database import Base  # type: ignore
+
+from database import Base
 
 
-class TeamData(Base):  # type: ignore
+class TeamData(Base):
     __tablename__ = "team_data"
 
     id = Column(Integer, primary_key=True, index=True)
@@ -11,7 +12,7 @@ class TeamData(Base):  # type: ignore
     name = Column(String(50), nullable=False)
     short_name = Column(String(50), nullable=False)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return (
             f"<Team(name={self.name}, short_name={self.short_name}, "
             f"fpl_id={self.fpl_id})>"

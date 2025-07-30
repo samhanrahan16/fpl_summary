@@ -1,7 +1,8 @@
 import asyncio
-import requests
 from threading import Thread
-from typing import Any, Coroutine
+from typing import Any, Coroutine, cast
+
+import requests
 
 from fpl_client.endpoints import FPLEndpoints
 
@@ -11,7 +12,7 @@ class FPLClientException(Exception):
 
 
 class AsyncRunner:
-    def __init__(self):
+    def __init__(self) -> None:
         self.loop = asyncio.new_event_loop()
         self.thread = Thread(target=self.start_loop, daemon=True)
         self.thread.start()
@@ -28,11 +29,11 @@ class AsyncRunner:
 
 class FPLClient:
 
-    def __init__(self):
+    def __init__(self) -> None:
 
         self.session = requests.Session()
 
-    def get_data(self, endpoint: FPLEndpoints) -> dict[Any, Any]:
+    def get_data(self, endpoint: FPLEndpoints | str) -> dict[Any, Any] | str:
         """Make get request."""
         try:
             response = self.session.get(endpoint)
@@ -40,7 +41,10 @@ class FPLClient:
             raise FPLClientException(e)
 
         if response.status_code == 200:
-            return response.json()
+            try:
+                return cast(dict[Any, Any], response.json())
+            except Exception:
+                return response.text
         else:
             raise FPLClientException(response.text)
 
@@ -57,6 +61,6 @@ class FPLClient:
             raise FPLClientException(e)
 
         if response.status_code == 200:
-            return response.json()
+            return cast(dict[Any, Any], response.json())
         else:
             raise FPLClientException(response.text)
